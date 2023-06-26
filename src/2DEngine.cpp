@@ -2,23 +2,41 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-int main(void)
-{
-    GLFWwindow* window;
+int windowWidth = 800;
+int windowHeight = 600;
 
-    /* Initialize the library */
-    if (!glfwInit())
+void onWindowResize(GLFWwindow* window, int width, int height) {
+    windowWidth = width;
+    windowHeight = height;
+    glViewport(0, 0, width, height);
+}
+
+void onKeyPressed(GLFWwindow* window, int key, int scanCode, int action, int mode) {
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, GL_TRUE);
+    }
+}
+
+int main(void) {
+    if (!glfwInit()) {
+        std::cout << "GLFW init failed!" << std::endl;
         return -1;
+    }
 
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!window)
-    {
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, "Hello World", nullptr, nullptr);
+    if (!window) {
+        std::cout << "Error while creating window!" << std::endl;
         glfwTerminate();
         return -1;
     }
 
-    /* Make the window's context current */
+    glfwSetWindowSizeCallback(window, onWindowResize);
+    glfwSetKeyCallback(window, onKeyPressed);
+
     glfwMakeContextCurrent(window);
 
     if (!gladLoadGL()) {
@@ -26,19 +44,14 @@ int main(void)
         return -1;
     }
 
-    std::cout << "OpenGL " << GLVersion.major << "." << GLVersion.minor << std::endl;
+    std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
+    std::cout << "OpenGL: " << glGetString(GL_VERSION) << std::endl;
+
     glClearColor(0, 1, 0, 1);
 
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
-        /* Render here */
+    while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
-
-        /* Swap front and back buffers */
         glfwSwapBuffers(window);
-
-        /* Poll for and process events */
         glfwPollEvents();
     }
 
