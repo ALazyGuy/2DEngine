@@ -67,4 +67,8 @@ namespace Renderer {
 
         return true;
     }
+
+    void ShaderProgram::setTexture(const std::string& name, const GLuint id) {
+        glUniform1i(glGetUniformLocation(this->id, name.c_str()), id);
+    }
 }

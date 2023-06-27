@@ -4,6 +4,7 @@
 
 #include "renderer/ShaderProgram.h"
 #include "resources/ResourceManager.h"
+#include "renderer/Texture2D.h"
 
 int windowWidth = 800;
 int windowHeight = 600;
@@ -18,6 +19,12 @@ GLfloat colors[] = {
     1.0f, 0.0f, 0.0f,
     0.0f, 1.0f, 0.0f,
     0.0f, 0.0f, 1.0f
+};
+
+GLfloat text[] = {
+    0.5f, 1.0f,
+    1.0f, 0.0f,
+    0.0f, 0.0f
 };
 
 void onWindowResize(GLFWwindow* window, int width, int height) {
@@ -66,6 +73,8 @@ int main(int argc, char **argv) {
         ResourceManager resourceManager(argv[0]);
         auto shaderProgram = resourceManager.loadShader("Default", "res/shaders/vertex.txt", "res/shaders/fragment.txt");
 
+        auto texture = resourceManager.loadTexture("Map", "res/textures/map_16x16.png");
+
         if (!shaderProgram) {
             std::cerr << "Can't create shader" << std::endl;
             return -1;
@@ -86,6 +95,11 @@ int main(int argc, char **argv) {
         glBindBuffer(GL_ARRAY_BUFFER, colorsVbo);
         glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
 
+        GLuint textVbo = 0;
+        glGenBuffers(1, &textVbo);
+        glBindBuffer(GL_ARRAY_BUFFER, textVbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(text), text, GL_STATIC_DRAW);
+
         GLuint vao = 0;
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
@@ -98,11 +112,20 @@ int main(int argc, char **argv) {
         glBindBuffer(GL_ARRAY_BUFFER, colorsVbo);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
+        glEnableVertexAttribArray(2);
+        glBindBuffer(GL_ARRAY_BUFFER, textVbo);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+        shaderProgram->use();
+        shaderProgram->setTexture("tex", 0);
+
+        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT);
 
-            shaderProgram->use();
             glBindVertexArray(vao);
+            texture->bind();
             glDrawArrays(GL_TRIANGLES, 0, 3);
 
             glfwSwapBuffers(window);

@@ -8,8 +8,11 @@ add_executable(2DEngine
 	src/2DEngine.cpp
 	src/renderer/ShaderProgram.cpp
 	src/renderer/ShaderProgram.h
+	src/renderer/Texture2D.cpp
+	src/renderer/Texture2D.h
 	src/resources/ResourceManager.cpp
-	src/resources/ResourceManager.h)
+	src/resources/ResourceManager.h
+	src/resources/stb_image.h)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)

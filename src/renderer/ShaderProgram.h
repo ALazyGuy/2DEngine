@@ -18,5 +18,6 @@ namespace Renderer {
 		~ShaderProgram();
 		bool isCompiled();
 		void use();
+		void setTexture(const std::string&, const GLuint);
 	};
 }
